@@ -29,10 +29,11 @@ class CorreoElectronico:
         mensaje['To'] = correo_receptor
         mensaje['Subject'] = asunto
 
-        texto = '      ' # Aqui va el texto plano del correo, si no se desea texto plano se puede dejar vacio
+        # Aqui va el texto plano del correo, si no se desea texto plano se puede dejar vacio
+        texto = '      '
         with open('C:/Users/G/Desktop/pymail/scripts/index.html', 'r', encoding='utf-8') as archivo_html:
             html = archivo_html.read()
-        
+
         mensaje.attach(MIMEText(texto, 'plain'))
         mensaje.attach(MIMEText(html, 'html'))
 
@@ -46,25 +47,23 @@ class CorreoElectronico:
 # Metodo para Correos masivos guardados en un CSV
 # Abrimos el archivo csv con los datos de los usuarios
 
+
 class CorreosCSV:
     def __init__(self, archivo_csv):
         self.correos_electronicos = []
         self.nombres = []
 
         df = pd.read_csv(archivo_csv)
-        # Condicion para verificar si el usuario cumple años
+        
+        # obtenemos la fecha de nacimiento del usuario y la pasamos a formato datetime
         df['nacimiento'] = pd.to_datetime(df['nacimiento'])
         # Dividimos la fecha de nacimiento en dia, mes y año
-        df['dia'] = df['nacimiento'].dt.day
-        df['mes'] = df['nacimiento'].dt.month
-        df['anio'] = df['nacimiento'].dt.year
-
-        # Obtenemos la fecha actual
+        df[['dia', 'mes', 'anio']
+           ] = df['nacimiento'].dt.day, df['nacimiento'].dt.month, df['nacimiento'].dt.year
+        # Obtenemos la fecha actual y la pasa a formato datetime
         fecha_actual = datetime.now().date()
         # Dividimos la fecha actual en dia, mes y año
-        dia_actual = fecha_actual.day
-        mes_actual = fecha_actual.month
-        anio_actual = fecha_actual.year
+        dia_actual, mes_actual, anio_actual = fecha_actual.day, fecha_actual.month, fecha_actual.year
 
         # Funcion lambda para verificar la edad del usuario
         df['edad'] = df.apply(lambda x: anio_actual - x['anio'] -
@@ -84,7 +83,7 @@ class CorreosCSV:
             self.correos_electronicos = df_filtrado['correo'].tolist()
             self.nombres = df_filtrado['nombre'].tolist()
 
-    def enviar_correos(self, asunto = 'Feliz Cumpleaños 🎂', mensaje = ''):
+    def enviar_correos(self, asunto='Feliz Cumpleaños 🎂', mensaje=''):
         correo = CorreoElectronico()
         for correo_receptor in range(len(self.correos_electronicos)):
             correo.enviar_correo(
@@ -93,5 +92,6 @@ class CorreosCSV:
         correo.cerrar_servidor()
 
 
-correos_automaticos = CorreosCSV('C:/Users/G/Desktop/pymail/mailscsv/usuarios.csv')
+correos_automaticos = CorreosCSV(
+    'C:/Users/G/Desktop/pymail/mailscsv/usuarios.csv')
 correos_automaticos.enviar_correos()
