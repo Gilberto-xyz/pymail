@@ -57,14 +57,19 @@ class CorreosCSV:
         
         # obtenemos la fecha de nacimiento del usuario y la pasamos a formato datetime
         df['nacimiento'] = pd.to_datetime(df['nacimiento'])
+        
         # Dividimos la fecha de nacimiento en dia, mes y año
-        df[['dia', 'mes', 'anio']
-           ] = df['nacimiento'].dt.day, df['nacimiento'].dt.month, df['nacimiento'].dt.year
-        # Obtenemos la fecha actual y la pasa a formato datetime
+        df['dia'] = df['nacimiento'].dt.day
+        df['mes'] = df['nacimiento'].dt.month
+        df['anio'] = df['nacimiento'].dt.year
+
+        # Obtenemos la fecha actual
         fecha_actual = datetime.now().date()
         # Dividimos la fecha actual en dia, mes y año
-        dia_actual, mes_actual, anio_actual = fecha_actual.day, fecha_actual.month, fecha_actual.year
-
+        dia_actual = fecha_actual.day
+        mes_actual = fecha_actual.month
+        anio_actual = fecha_actual.year
+        
         # Funcion lambda para verificar la edad del usuario
         df['edad'] = df.apply(lambda x: anio_actual - x['anio'] -
                               ((mes_actual, dia_actual) < (x['mes'], x['dia'])), axis=1)
