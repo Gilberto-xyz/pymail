@@ -13,5 +13,9 @@ Se debe configurar la cuenta de correo para que permita el envio de correos desd
 - SMTPLIB
 
 ## Script de pruebas de envio de correos
-Se encuentra en la carpeta principal, el archivo `testmail.py`
+Se encuentra en la carpeta scripts, el archivo `testmail.py`
+
+## Script Final de envio de correos obtenidos de un CSV
+Se encuentra en la carpeta scripts, el archivo `Main.py`
+
 
