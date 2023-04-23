@@ -2,14 +2,14 @@
 import pandas as pd 
 import smtplib
 from email.mime.text import MIMEText
-from claves import CORREO_EMISOR, CONTRASENA_EMISOR
+import claves 
 
 # Clase para enviar correos electronicos
 class  CorreoElectronico:
     # Definimos el constructor de la clase CorreoElectronico que almacena los datos del correo emisor
     def  __init__(self):
-        self.correo_emisor = CORREO_EMISOR
-        self.contrasena_emisor = CONTRASENA_EMISOR
+        self.correo_emisor = claves.CORREO_EMISOR
+        self.contrasena_emisor = claves.CONTRASENA_EMISOR
         self.servidor_smtp = smtplib.SMTP('smtp.gmail.com', 587)
         self.servidor_smtp.starttls()
         
@@ -28,9 +28,10 @@ class  CorreoElectronico:
     # Definimos el metodo cerrar_servidor que cierra la conexion con el servidor
     def cerrar_servidor(self):
         self.servidor_smtp.quit()
+     
         
 # Abrimos el archivo csv con los datos de los usuarios
-df = pd.read_csv('mailscsv/usuarios.csv')
+df = pd.read_csv('C:/Users/G/Desktop/pymail/mailscsv/usuarios.csv')#C:\Users\G\Desktop\pymail\mailscsv\usuarios.csv
 correos_electronicos = df['correo'].tolist()
 nombres = df['nombre'].tolist()
 
