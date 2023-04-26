@@ -6,7 +6,6 @@ from reportlab.pdfgen import canvas  # Libreria para crear PDFs
 # Libreria para crear mensajes de correo oriendato a PDF
 from email.message import EmailMessage
 
-
 class Usuario:
     def __init__(self, nombre, correo, nacimiento):
         self.nombre = nombre
@@ -50,12 +49,11 @@ class CorreoElectronico:
                 50, 575, f'asi que no olvides revisar tu correo con el que te registraste: {mensaje["To"]}')
             lienzo.save()
             archivo_pdf = 'Nuevo ingreso.pdf'
-            for archivo in archivo_pdf:
-                with open(archivo_pdf, 'rb') as pdf:
-                    archivo_datos = pdf.read()
-                    archivo_nombre = pdf.name
-                mensaje.add_attachment(archivo_datos, maintype='application',
-                                    subtype='octet-stream', filename=archivo_nombre)
+            with open(archivo_pdf, 'rb') as pdf:
+                archivo_datos = pdf.read()
+                archivo_nombre = pdf.name
+            mensaje.add_attachment(archivo_datos, maintype='application',
+                                subtype='octet-stream', filename=archivo_nombre)
 
         self.servidor_smtp.send_message(mensaje)
 
@@ -80,32 +78,17 @@ class CorreosCSV:
         for usuario in self.usuarios:
             # Si el usuario cumple años, enviar correo de cumpleaños
             if usuario.cumpleanos_hoy():
-                asunto = 'Feliz cumpleaños!'
-                mensaje = ' '
                 print(f'Enviando correo de Feliz cumpleaños a {usuario}')
+                asunto = 'Feliz cumpleaños!'
                 mensaje = EmailMessage()
 
-                # Funciona pero manda el correo en texto plano
-                mensaje.set_content('Feliz cumpleaños!')
-                mensaje.add_alternative("""\
-                <!DOCTYPE html>
-<head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-</head>
-<body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h1>¡Feliz Dia!</h1>
-                <p>Hoy celebramos tu vida y todo lo que has logrado hasta ahora. Eres una persona increíblemente talentosa y valiente que ha superado muchos obstáculos en su camino. Espero que este nuevo año de vida te traiga muchas alegrías y éxitos.</p>
-                <img src="https://i0.wp.com/acegif.com/wp-content/gif/hapby-cat-32.gif" alt="cute kitten gif" height=500px>
-            </div>
-        </div>
-    </div>
-</body>
-</html>""", subtype='html')
-                correo.enviar_correo(usuario.correo, asunto,
-                                     cuerpo=mensaje, adjunto=None)
+                with open('C:/Users/G/Desktop/pymail/scripts/index.html', 'r', encoding='utf-8') as f:
+                    html_content = f.read()
+
+                mensaje.add_alternative(html_content, subtype='html')
+                correo.enviar_correo(usuario.correo, asunto, cuerpo=mensaje, adjunto=None)
+                
+
             # Si el usuario no cumple años, enviar correo de bienvenida
             else:
                 asunto = 'Bienvenido a la empresa'
