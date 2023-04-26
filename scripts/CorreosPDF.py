@@ -6,6 +6,9 @@ from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+
+from email import encoders
+# from 
 from reportlab.pdfgen import canvas
 
 import claves
@@ -23,7 +26,7 @@ class CorreoElectronico:
         self.servidor_smtp.login(self.correo_emisor, self.contrasena_emisor)
 
     # Definimos el metodo enviar_correo que contiene el cuerpo del correo
-    def enviar_correo(self, correo_receptor, asunto, cuerpo):
+    def enviar_correo(self, correo_receptor, asunto, cuerpo,nombres):
         # Aqui cambiamos el MIMEText por MIMEMultipart para enviar correos con HTML
         mensaje = MIMEMultipart(cuerpo)
         mensaje['From'] = self.correo_emisor
@@ -33,8 +36,17 @@ class CorreoElectronico:
         # Envio de archivos adjuntos PDF
         mensaje.attach(MIMEText(cuerpo, 'plain'))
 
+        # Agregamos el archivo PDF
+        with open('Bienvenida.pdf', 'rb') as archivo_pdf:
+            adjunto = MIMEBase('application', 'octet-stream')
+            adjunto.set_payload(archivo_pdf.read())
+            adjunto.set_type('application/pdf')
+            encoders.encode_base64(adjunto)
+            adjunto.add_header('Content-Disposition', 'attachment', filename='Bienvenida.pdf')
+            mensaje.attach(adjunto)
+
         self.servidor_smtp.sendmail(
-            self.correo_emisor, correo_receptor, mensaje.as_string())
+            self.correo_emisor, correo_receptor, mensaje)
 
     # Definimos el metodo cerrar_servidor que cierra la conexion con el servidor
     def cerrar_servidor(self):
@@ -56,16 +68,25 @@ class CorreosCSV:
         self.correos_electronicos = df['correo'].tolist()
         self.nombres = df['nombre'].tolist()
 
+        # Creamos el PDF dinamico
+        c = canvas.Canvas(f'Bienvenida.pdf')
+        # Mensaje de bienvenida x, y, mensaje
+        c.drawString(50, 800, f'Hola, Bienvenido')
+        c.drawString(50, 750, f'¡Estoy muy emocionado de darte la bienvenida al equipo!')
+        c.drawString(50, 700, f'Sé que comenzar un nuevo trabajo puede ser abrumador')
+        c.drawString(50, 650, f' Estoy emocionado de ver lo que logras en tu nuevo rol. ¡Bienvenido al equipo!') 
+        
+        c.save()
+
     def enviar_correos(self, asunto, mensaje):
         correo = CorreoElectronico()
         for correo_receptor in range(len(self.correos_electronicos)):
             correo.enviar_correo(
-                self.correos_electronicos[correo_receptor], asunto, mensaje)
+                self.correos_electronicos[correo_receptor], asunto, mensaje, self.nombres)
             print(f'Correo enviado a {self.nombres[correo_receptor]}')
         correo.cerrar_servidor()
 
 
-
-# correos_automaticos = CorreosCSV(
-#     'C:/Users/G/Desktop/pymail/mailscsv/usuarios.csv')
-# correos_automaticos.enviar_correos()
+correos_automaticos = CorreosCSV(
+     'C:/Users/G/Desktop/pymail/mailscsv/usuarios.csv')
+correos_automaticos.enviar_correos('Bienvenido a la empresa',   'Hola, ¡Bienvenido!')
