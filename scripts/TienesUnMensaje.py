@@ -94,7 +94,7 @@ class CorreosCSV:
                 asunto = 'Bienvenido a la empresa'
                 mensaje = '''Hola, ¡Bienvenido!\nEn el archivo adjunto encontrarás información importante sobre la empresa.'''
                 adjuntos = 'Nuevo ingreso.pdf'
-                print(f'Enviando correo de bienvenida a {usuario}')
+                print(f'Enviando correo de bienvenida (PDF) a {usuario}')
                 correo.enviar_correo(usuario.correo, asunto, cuerpo=mensaje, adjunto=adjuntos)
         correo.cerrar_servidor()
 
